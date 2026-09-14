@@ -1,2 +1,2 @@
 # cs2114-project1-group72
-Still deciding what we are making out of our ideas. CHANGE THIS
+A budgeting program for one month at a time. The user sets income and a budget, then records expenses with an amount, category, description, and date. Expenses can be edited or deleted. The program can show total spending, money remaining, category totals, and habitual versus non habitual spending. ExpenseTracker owns the expense list and can load or save that list as CSV.
