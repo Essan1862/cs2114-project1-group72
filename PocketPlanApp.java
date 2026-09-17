@@ -19,4 +19,83 @@ public class PocketPlanApp
         this.scanner = scanner;
         this.tracker = tracker;
     }
+
+
+    public void run() {
+        boolean exit = false;
+        while (!exit) {
+            printMenu();
+            int choice;
+            try {
+                choice = InputValidator.validateMenuChoice(scanner.nextLine(), 1, 8);
+            } catch (InvalidInputException e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
+            switch (choice) {
+                case 1 -> promptForIncomeAndBudget();
+                case 2 -> handleAddExpense();
+                case 3 -> handleEditExpense();
+                case 4 -> handleDeleteExpense();
+                case 5 -> displayExpenseList();
+                case 6 -> displaySummary();
+                case 7 -> displayCategoryAndHabitualReport();
+                case 8 -> exit = true;
+            }
+        }
+        System.out.println("Goodbye.");
+    }
+
+    private void printMenu() {
+        System.out.println();
+        System.out.println("=== PocketPlan ===");
+        System.out.println("1. Set income and budget");
+        System.out.println("2. Add expense");
+        System.out.println("3. Edit expense");
+        System.out.println("4. Delete expense");
+        System.out.println("5. View expenses");
+        System.out.println("6. View spending summary");
+        System.out.println("7. View category and habitual reports");
+        System.out.println("8. Exit");
+        System.out.print("Choose an option: ");
+    }
+
+        private void promptForIncomeAndBudget() {
+        while (true) {
+            try {
+                System.out.print("Enter monthly income: ");
+                double income = InputValidator.validatePositiveAmount(scanner.nextLine(), "income");
+                System.out.print("Enter total budget: ");
+                double totalBudget = InputValidator.validatePositiveAmount(scanner.nextLine(), "budget");
+                tracker.setBudget(income, totalBudget);
+                System.out.println("Budget set.");
+                return;
+            } catch (InvalidInputException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void handleAddExpense() {
+        if (!tracker.hasBudget()) {
+            System.out.println("Enter income and budget first.");
+            return;
+        }
+        try {
+            System.out.print("Amount: ");
+            double amount = InputValidator.validatePositiveAmount(scanner.nextLine(), "amount");
+            System.out.print("Category " + java.util.Arrays.toString(Category.values()) + ": ");
+            Category category = InputValidator.validateCategory(scanner.nextLine());
+            System.out.print("Description: ");
+            String description = InputValidator.validateDescription(scanner.nextLine());
+            System.out.print("Date (YYYY-MM-DD): ");
+            LocalDate date = InputValidator.validateDate(scanner.nextLine());
+            System.out.print("Habitual? (yes/no): ");
+            boolean habitual = InputValidator.validateHabitualTag(scanner.nextLine());
+            Expense added = tracker.addExpense(amount, category, description, date, habitual);
+            System.out.println("Added expense #" + added.getId() + ".");
+        } catch (InvalidInputException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
