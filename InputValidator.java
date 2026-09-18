@@ -55,6 +55,14 @@ public class InputValidator
     }
 
 
+    /**
+     * Compares user input to set of Category options. Throws an exception if 
+     * category does not exist or the input is null or empty.
+     * 
+     * @param input Raw string entered by the user
+     * @return Matching Category enum value
+     * @throws InvalidInputException if match fails or input is blank
+     */
     public static Category validateCategory(String input)
         throws InvalidInputException
     {
@@ -62,6 +70,16 @@ public class InputValidator
             throw new InvalidInputException("Please enter a valid category.")
         }
         
+        String target = input.trim.toUpperCase();
+        
+        for (Category category : Category.values()) {
+            if (category.name().equals(target)) {
+                return category;
+            }
+        }
+        
+        throw new InvalidInputException("Unknown category: " + input + 
+            "Please enter a valid category: " + getAllowedCategories());
         
     }
 }
