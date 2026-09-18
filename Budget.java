@@ -1,3 +1,5 @@
+package pocketplan;
+
 /**
  * // -------------------------------------------------------------------------
  * /** Stores the monthly income and budget added. Creates methods to determine
@@ -12,8 +14,14 @@ public class Budget
     private double monthlyIncome;
     private double totalBudget;
 
-    public Budget(double monthlyIncome, double totalBudget)
+    public Budget(double income, double totalBudget)
+        throws InvalidInputException
     {
+        if (totalBudget > income)
+        {
+            throw new InvalidInputException(
+                "Budget cannot exceed monthly income.");
+        }
         this.monthlyIncome = income;
         this.totalBudget = totalBudget;
     }
@@ -24,7 +32,7 @@ public class Budget
      */
     public double getIncome()
     {
-        return income;
+        return monthlyIncome;
     }
 
 
@@ -63,5 +71,6 @@ public class Budget
         {
             return true;
         }
+        return false;
     }
 }
