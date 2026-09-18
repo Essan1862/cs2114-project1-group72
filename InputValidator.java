@@ -9,6 +9,12 @@ import java.time.format.DateTimeParseException;
 public class InputValidator
 {
 
+    // Flexible date parsers for user input
+    private static final DateTimeFormatter ISO_FORMATTER =
+        DateTimeFormatter.ISO_LOCAL_DATE; // YYYY-MM-DD
+    private static final DateTimeFormatter SLASH_FORMATTER =
+        DateTimeFormatter.ofPattern("M/d/yyyy"); // MM/DD/YYYY
+
     // Private constructor to prevent instantiation (Utility class)
     private InputValidator()
     {
@@ -80,6 +86,36 @@ public class InputValidator
         
         throw new InvalidInputException("Unknown category: " + input + 
             "Please enter a valid category: " + getAllowedCategories());
-        
     }
+
+
+    public static LocalDate validateDate(String input)
+        throws InvalidInputException
+    {
+        if (input == null || input.trim(.isEmpty())) {
+            throw new InvalidInputException("Date can not be left empty.")
+        }
+        
+        tring trimmed = input.trim();
+
+        // Try standard YYYY-MM-DD format
+        try {
+            return LocalDate.parse(trimmed, ISO_FORMATTER);
+        } catch (DateTimeParseException ignored) {
+            // Fall through to secondary format attempt
+        }
+
+        // Try standard M/D/YYYY or MM/DD/YYYY format
+        try {
+            return LocalDate.parse(trimmed, SLASH_FORMATTER);
+        } catch (DateTimeParseException ignored) {
+            // Fall through to error
+        }
+
+        throw new InvalidInputException("Invalid date format: '" + input + "'. "
+            + "Please use YYYY-MM-DD (e.g., 2026-04-15) or MM/DD/YYYY.");
+    }
+
+}
+
 }
