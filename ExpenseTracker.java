@@ -1,3 +1,5 @@
+package pocketplan;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -35,6 +37,7 @@ public class ExpenseTracker
 
 
     public void setBudget(double income, double totalBudget)
+        throws InvalidInputException
     {
         this.budget = new Budget(income, totalBudget);
     }
@@ -100,6 +103,11 @@ public class ExpenseTracker
         boolean habitual)
         throws InvalidInputException
     {
+        if (!hasBudget())
+        {
+            throw new InvalidInputException(
+                "Cannot edit expense: Budget is not set.");
+        }
 
         Expense expense = findExpenseById(id);
         double spentWithoutThisExpense = getTotalSpent() - expense.getAmount();
@@ -209,6 +217,65 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Saves the current budget (income and total budget) to a CSV file. Writes
+     * nothing if no budget has been set.
+     * 
+     * @param filename
+     *            the name of the file to save to
+     * @throws FileNotFoundException
+     *             if the file cannot be created
+     */
+    public void saveBudgetToCSV(String filename)
+        throws FileNotFoundException
+    {
+        try (PrintWriter writer = new PrintWriter(new File(filename)))
+        {
+            if (hasBudget())
+            {
+                writer.println(
+                    budget.getIncome() + "," + budget.getTotalBudget());
+            }
+        }
+    }
+
+
+    /**
+     * Loads the budget (income and total budget) from a CSV file, if present.
+     * 
+     * @param filename
+     *            the name of the file to read from
+     * @throws FileNotFoundException
+     *             if the file does not exist
+     */
+    public void loadBudgetFromCSV(String filename)
+        throws FileNotFoundException
+    {
+        try (Scanner scanner = new Scanner(new File(filename)))
+        {
+            if (scanner.hasNextLine())
+            {
+                String line = scanner.nextLine().trim();
+                String[] parts = line.split(",");
+                if (parts.length == 2)
+                {
+                    double income = Double.parseDouble(parts[0]);
+                    double totalBudget = Double.parseDouble(parts[1]);
+                    try
+                    {
+                        setBudget(income, totalBudget);
+                    }
+                    catch (InvalidInputException e)
+                    {
+                        System.out.println(
+                            "Saved budget was invalid and could not be restored: "
+                                + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
 
     public List<Expense> getExpenses()
     {
@@ -274,6 +341,34 @@ public class ExpenseTracker
     }
 
 
+    public double getHabitualTotal()
+    {
+        double total = 0.0;
+        for (Expense e : expenses)
+        {
+            if (e.isHabitual())
+            {
+                total += e.getAmount();
+            }
+        }
+        return total;
+    }
+
+
+    public double getNonHabitualTotal()
+    {
+        double total = 0.0;
+        for (Expense e : expenses)
+        {
+            if (!e.isHabitual())
+            {
+                total += e.getAmount();
+            }
+        }
+        return total;
+    }
+
+
     private Expense findExpenseById(int id)
         throws InvalidInputException
     {
@@ -287,12 +382,12 @@ public class ExpenseTracker
         throw new InvalidInputException("Expense ID not found.");
     }
 
-    public List<Expense> resetForNewMonth(double income, double totalBudget) 
+
+    public void resetForNewMonth(double income, double totalBudget)
+        throws InvalidInputException
     {
-        List<Expense> archived = new ArrayList<>(this.expenses); // snapshot before wiping
         this.expenses.clear();
         this.nextId = 1;
         setBudget(income, totalBudget);
-        return archived;
     }
 }
