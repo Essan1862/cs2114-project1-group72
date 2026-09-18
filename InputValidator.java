@@ -89,6 +89,24 @@ public class InputValidator
     }
 
 
+    // Helper method to put categories into a String
+    private static String getAllowedCategories()
+    {
+        StringBuilder sb = new StringBuilder("[");
+        Category[] categories = Category.values();
+        for (int i = 0; i < categories.length; i++)
+        {
+            sb.append(categories[i].name());
+            if (i < categories.length - 1)
+            {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+
     public static LocalDate validateDate(String input)
         throws InvalidInputException
     {
@@ -116,6 +134,47 @@ public class InputValidator
             + "Please use YYYY-MM-DD (e.g., 2026-04-15) or MM/DD/YYYY.");
     }
 
-}
+
+    /**
+     * Parses an integer menu choice and ensures it falls within [min, max].
+     *
+     * @param input
+     *            Raw choice string from user
+     * @param min
+     *            Minimum allowed menu integer
+     * @param max
+     *            Maximum allowed menu integer
+     * @return Validated integer selection
+     * @throws InvalidInputException
+     *             if input is non-numeric or outside [min, max]
+     */
+    public static int validateMenuChoice(String input, int min, int max)
+        throws InvalidInputException
+    {
+        if (input == null || input.trim().isEmpty())
+        {
+            throw new InvalidInputException(
+                "Selection cannot be empty. Choose between " + min + " and "
+                    + max + ".");
+        }
+
+        try
+        {
+            int choice = Integer.parseInt(input.trim());
+            if (choice < min || choice > max)
+            {
+                throw new InvalidInputException(
+                    "Choice out of range. Please enter a number between " + min
+                        + " and " + max + ".");
+            }
+            return choice;
+        }
+        catch (NumberFormatException e)
+        {
+            throw new InvalidInputException(
+                "Invalid selection: '" + input
+                    + "'. Please enter a valid whole number.");
+        }
+    }
 
 }
