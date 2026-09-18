@@ -286,4 +286,13 @@ public class ExpenseTracker
         }
         throw new InvalidInputException("Expense ID not found.");
     }
+
+    public List<Expense> resetForNewMonth(double income, double totalBudget) 
+    {
+        List<Expense> archived = new ArrayList<>(this.expenses); // snapshot before wiping
+        this.expenses.clear();
+        this.nextId = 1;
+        setBudget(income, totalBudget);
+        return archived;
+    }
 }
