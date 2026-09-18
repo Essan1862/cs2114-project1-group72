@@ -188,4 +188,14 @@ public class PocketPlanApp
         System.out.printf("Habitual total:     $%.2f%n", tracker.getHabitualTotal());
         System.out.printf("Non-habitual total: $%.2f%n", tracker.getNonHabitualTotal());
     }
+
+    private void handleNewBudget() 
+    {
+        List<Expense> oldExpenses = tracker.resetForNewMonth(income, totalBudget);
+        if (!oldExpenses.isEmpty()) 
+        {
+            String periodLabel = LocalDate.now().toString(); // or ask the user to name the month
+            archiveStorage.archiveExpenses(ARCHIVE_FILEPATH, oldExpenses, periodLabel);
+        }
+    }
 }
