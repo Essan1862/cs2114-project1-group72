@@ -53,4 +53,15 @@ public class InputValidator
                     + "'. Please enter a valid number (e.g., 45.75).");
         }
     }
+
+
+    public static Category validateCategory(String input)
+        throws InvalidInputException
+    {
+        if (input == null || input.trim().isEmpty()) {
+            throw new InvalidInputException("Please enter a valid category.")
+        }
+        
+        
+    }
 }
