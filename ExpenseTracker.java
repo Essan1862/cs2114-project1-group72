@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -5,13 +8,14 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 
 /**
  * Manages the collection of expenses and checks operations against the budget.
- * This class is the only one allowed to modify the expense list.
+ * Handles persisting data to and loading from a CSV file.
  * 
  * @author Wenxin Zhang
- * @version 2026.9.17
+ * @version 2026.09.18
  */
 public class ExpenseTracker
 {
@@ -85,8 +89,7 @@ public class ExpenseTracker
 
 
     /**
-     * Edits an existing expense atomically, ensuring the new amount doesn't
-     * break the budget.
+     * Edits an existing expense atomically.
      */
     public Expense editExpense(
         int id,
@@ -99,9 +102,6 @@ public class ExpenseTracker
     {
 
         Expense expense = findExpenseById(id);
-
-        // Calculate what the total spent WOULD be if we replace the old amount
-        // with the new amount
         double spentWithoutThisExpense = getTotalSpent() - expense.getAmount();
 
         if (budget.wouldExceedBudget(spentWithoutThisExpense, amount))
@@ -133,8 +133,83 @@ public class ExpenseTracker
 
 
     /**
-     * Returns an unmodifiable snapshot of the expenses.
+     * Saves all current expenses to a CSV file.
+     * 
+     * @param filename
+     *            the name of the file to save to
+     * @throws FileNotFoundException
+     *             if the file cannot be created
      */
+    public void saveToCSV(String filename)
+        throws FileNotFoundException
+    {
+        try (PrintWriter writer = new PrintWriter(new File(filename)))
+        {
+            for (Expense e : expenses)
+            {
+                String safeDescription = e.getDescription().replace(",", " ");
+                writer.println(
+                    e.getId() + "," + e.getAmount() + ","
+                        + e.getCategory().name() + "," + safeDescription + ","
+                        + e.getDate().toString() + "," + e.isHabitual());
+            }
+        }
+    }
+
+
+    /**
+     * Loads expenses from a CSV file and restores nextId.
+     * 
+     * @param filename
+     *            the name of the file to read from
+     * @throws FileNotFoundException
+     *             if the file does not exist
+     */
+    public void loadFromCSV(String filename)
+        throws FileNotFoundException
+    {
+        expenses.clear();
+        int maxId = 0;
+
+        try (Scanner scanner = new Scanner(new File(filename)))
+        {
+            while (scanner.hasNextLine())
+            {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty())
+                    continue;
+
+                String[] parts = line.split(",");
+                if (parts.length == 6)
+                {
+                    int id = Integer.parseInt(parts[0]);
+                    double amount = Double.parseDouble(parts[1]);
+                    Category category = Category.valueOf(parts[2]);
+                    String description = parts[3];
+                    LocalDate date = LocalDate.parse(parts[4]);
+                    boolean habitual = Boolean.parseBoolean(parts[5]);
+
+                    Expense e = new Expense(
+                        id,
+                        amount,
+                        category,
+                        description,
+                        date,
+                        habitual);
+                    expenses.add(e);
+
+                    if (id > maxId)
+                    {
+                        maxId = id;
+                    }
+                }
+            }
+        }
+        this.nextId = maxId + 1;
+    }
+
+
+
     public List<Expense> getExpenses()
     {
         return Collections.unmodifiableList(expenses);
@@ -199,37 +274,6 @@ public class ExpenseTracker
     }
 
 
-    public double getHabitualTotal()
-    {
-        double total = 0.0;
-        for (Expense e : expenses)
-        {
-            if (e.isHabitual())
-            {
-                total += e.getAmount();
-            }
-        }
-        return total;
-    }
-
-
-    public double getNonHabitualTotal()
-    {
-        double total = 0.0;
-        for (Expense e : expenses)
-        {
-            if (!e.isHabitual())
-            {
-                total += e.getAmount();
-            }
-        }
-        return total;
-    }
-
-
-    /**
-     * Private helper to locate an expense or throw an error.
-     */
     private Expense findExpenseById(int id)
         throws InvalidInputException
     {
