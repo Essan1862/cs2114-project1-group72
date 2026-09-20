@@ -1,3 +1,5 @@
+package pocketplan;
+
 /**
  * Thrown when input from the user cannot be accepted, such as an amount that is
  * not a positive number, an unknown category, a blank description, or a
