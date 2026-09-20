@@ -1,2 +1,2 @@
 # cs2114-project1-group72
-A budgeting program for one month at a time. The user sets income and a budget, then records expenses with an amount, category, description, and date. Expenses can be edited or deleted. The program can show total spending, money remaining, category totals, and habitual versus non habitual spending. ExpenseTracker owns the expense list and can load or save that list as CSV.
+A simple Java console app for tracking a monthly budget. Set your income and budget, then add, edit, or delete expenses to see what you've spent, what's left, and how your spending breaks down by category and by habitual vs. non-habitual. Data is saved to CSV and reloads automatically the next time. you run it.
