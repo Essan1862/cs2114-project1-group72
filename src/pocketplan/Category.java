@@ -1,3 +1,5 @@
+package pocketplan;
+
 /**
  * Represents the allowed categories for expenses in PocketPlan.
  *
