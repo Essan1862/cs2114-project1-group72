@@ -1,3 +1,5 @@
+package pocketplan;
+
 import java.util.Scanner;
 import student.TestCase;
 
