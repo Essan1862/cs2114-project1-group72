@@ -1,8 +1,6 @@
 package pocketplan;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import student.TestCase;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -16,13 +14,13 @@ import java.util.Optional;
  * @verison 2026.09.18
  */
 public class ExpenseTrackerTest
+    extends TestCase
 {
 
     private ExpenseTracker tracker;
     private LocalDate testDate;
     private final String TEST_FILE = "test_expenses_temp.csv";
 
-    @Before
     public void setUp()
     {
         tracker = new ExpenseTracker();
@@ -30,7 +28,6 @@ public class ExpenseTrackerTest
     }
 
 
-    @Test
     public void testSetBudgetAndAddExpense()
         throws Exception
     {
@@ -50,7 +47,6 @@ public class ExpenseTrackerTest
     }
 
 
-    @Test
     public void testGetHighestSpendingCategory()
         throws Exception
     {
@@ -66,7 +62,6 @@ public class ExpenseTrackerTest
     }
 
 
-    @Test
     public void testSaveAndLoadCSV()
         throws Exception
     {
@@ -107,7 +102,6 @@ public class ExpenseTrackerTest
     }
 
 
-    @Test
     public void testAddExpenseWithoutBudgetThrowsException()
     {
         try
@@ -123,7 +117,6 @@ public class ExpenseTrackerTest
     }
 
 
-    @Test
     public void testAddExpenseExceedsBudgetThrowsException()
         throws Exception
     {
@@ -149,7 +142,6 @@ public class ExpenseTrackerTest
     }
 
 
-    @Test
     public void testDeleteExpenseWithInvalidIdThrowsException()
         throws Exception
     {
@@ -164,6 +156,165 @@ public class ExpenseTrackerTest
         catch (Exception e)
         {
             assertTrue(e.getMessage().contains("ID not found"));
+        }
+    }
+
+
+    public void testEditExpense()
+        throws Exception
+    {
+        tracker.setBudget(3000.0, 2000.0);
+
+        Expense expense = tracker
+            .addExpense(50.0, Category.FOOD, "Groceries", testDate, true);
+
+        tracker.editExpense(
+            expense.getId(),
+            75.0,
+            Category.ENTERTAINMENT,
+            "Movie",
+            testDate,
+            false);
+
+        assertEquals(75.0, expense.getAmount(), 0.001);
+        assertEquals(Category.ENTERTAINMENT, expense.getCategory());
+        assertEquals("Movie", expense.getDescription());
+        assertFalse(expense.isHabitual());
+    }
+
+
+    public void testEditExpenseExceedsBudget()
+        throws Exception
+    {
+        tracker.setBudget(1000.0, 500.0);
+
+        Expense expense =
+            tracker.addExpense(100.0, Category.FOOD, "Food", testDate, true);
+
+        try
+        {
+            tracker.editExpense(
+                expense.getId(),
+                600.0,
+                Category.FOOD,
+                "Expensive food",
+                testDate,
+                true);
+
+            fail("Expected InvalidInputException.");
+        }
+        catch (InvalidInputException e)
+        {
+            assertTrue(e.getMessage().contains("exceed the total budget"));
+        }
+    }
+
+
+    public void testDeleteExpense()
+        throws Exception
+    {
+        tracker.setBudget(1000.0, 1000.0);
+
+        Expense expense =
+            tracker.addExpense(50.0, Category.FOOD, "Food", testDate, true);
+
+        Expense deleted = tracker.deleteExpense(expense.getId());
+
+        assertEquals(expense, deleted);
+        assertEquals(0, tracker.getExpenses().size());
+        assertEquals(0.0, tracker.getTotalSpent(), 0.001);
+    }
+
+
+    public void testGetCategoryBreakdown()
+        throws Exception
+    {
+        tracker.setBudget(3000.0, 2000.0);
+
+        tracker.addExpense(50.0, Category.FOOD, "Lunch", testDate, true);
+
+        tracker.addExpense(75.0, Category.FOOD, "Dinner", testDate, false);
+
+        tracker.addExpense(
+            100.0,
+            Category.ENTERTAINMENT,
+            "Concert",
+            testDate,
+            false);
+
+        assertEquals(
+            125.0,
+            tracker.getCategoryBreakdown().get(Category.FOOD),
+            0.001);
+
+        assertEquals(
+            100.0,
+            tracker.getCategoryBreakdown().get(Category.ENTERTAINMENT),
+            0.001);
+    }
+
+
+    public void testHabitualAndNonHabitualTotals()
+        throws Exception
+    {
+        tracker.setBudget(3000.0, 2000.0);
+
+        tracker.addExpense(100.0, Category.FOOD, "Groceries", testDate, true);
+
+        tracker
+            .addExpense(50.0, Category.ENTERTAINMENT, "Movie", testDate, false);
+
+        tracker
+            .addExpense(25.0, Category.TRANSPORTATION, "Gas", testDate, true);
+
+        assertEquals(125.0, tracker.getHabitualTotal(), 0.001);
+
+        assertEquals(50.0, tracker.getNonHabitualTotal(), 0.001);
+    }
+
+
+    public void testResetForNewMonth()
+        throws Exception
+    {
+        tracker.setBudget(3000.0, 2000.0);
+
+        tracker.addExpense(100.0, Category.FOOD, "Food", testDate, true);
+
+        tracker.resetForNewMonth(4000.0, 2500.0);
+
+        assertEquals(0, tracker.getExpenses().size());
+        assertEquals(0.0, tracker.getTotalSpent(), 0.001);
+        assertEquals(4000.0, tracker.getBudget().getIncome(), 0.001);
+        assertEquals(2500.0, tracker.getBudget().getTotalBudget(), 0.001);
+
+        Expense newExpense = tracker
+            .addExpense(50.0, Category.FOOD, "New month", testDate, false);
+
+        assertEquals(1, newExpense.getId());
+    }
+
+
+    public void testSaveAndLoadBudgetCSV()
+        throws Exception
+    {
+        String budgetFile = "test_budget_temp.csv";
+
+        tracker.setBudget(5000.0, 3000.0);
+        tracker.saveBudgetToCSV(budgetFile);
+
+        ExpenseTracker loadedTracker = new ExpenseTracker();
+
+        loadedTracker.loadBudgetFromCSV(budgetFile);
+
+        assertTrue(loadedTracker.hasBudget());
+        assertEquals(5000.0, loadedTracker.getBudget().getIncome(), 0.001);
+        assertEquals(3000.0, loadedTracker.getBudget().getTotalBudget(), 0.001);
+
+        File file = new File(budgetFile);
+
+        if (file.exists())
+        {
+            file.delete();
         }
     }
 }

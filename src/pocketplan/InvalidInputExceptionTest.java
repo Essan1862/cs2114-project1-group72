@@ -5,38 +5,50 @@ import student.TestCase;
 /**
  * Tests for InvalidInputException.
  */
-public class InvalidInputExceptionTest extends TestCase {
+public class InvalidInputExceptionTest
+    extends TestCase
+{
 
-    public void testGetMessageReturnsTheMessagePassedIn() {
-        InvalidInputException exception =
-            new InvalidInputException("Amount must be a positive number, such as 25.50");
+    public void testGetMessageReturnsTheMessagePassedIn()
+    {
+        InvalidInputException exception = new InvalidInputException(
+            "Amount must be a positive number, such as 25.50");
 
         assertEquals(
             "Amount must be a positive number, such as 25.50",
             exception.getMessage());
     }
 
-    public void testDifferentMessageIsStoredCorrectly() {
+
+    public void testDifferentMessageIsStoredCorrectly()
+    {
         InvalidInputException exception =
             new InvalidInputException("Category is unknown.");
 
         assertEquals("Category is unknown.", exception.getMessage());
     }
 
-    public void testIsAnInstanceOfException() {
-        InvalidInputException exception = new InvalidInputException("Bad input.");
+
+    public void testIsAnInstanceOfException()
+    {
+        InvalidInputException exception =
+            new InvalidInputException("Bad input.");
 
         assertTrue(exception instanceof Exception);
     }
 
-    public void testCanBeThrownAndCaught() {
+
+    public void testCanBeThrownAndCaught()
+    {
         boolean caught = false;
         String caughtMessage = null;
 
-        try {
+        try
+        {
             throw new InvalidInputException("Description cannot be blank.");
         }
-        catch (InvalidInputException e) {
+        catch (InvalidInputException e)
+        {
             caught = true;
             caughtMessage = e.getMessage();
         }

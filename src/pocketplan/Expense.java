@@ -1,7 +1,6 @@
 package pocketplan;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 /**
  * Represents one expense in PocketPlan. An expense records how much was spent,
@@ -25,8 +24,7 @@ public class Expense
      * Creates a new expense.
      *
      * @param id
-     *            the unique number for this expense, assigned by
-     *            ExpenseTracker, must be greater than zero
+     *            the unique number for this expense, assigned by ExpenseTracker
      * @param amount
      *            how much was spent, must be greater than zero
      * @param category
@@ -48,13 +46,40 @@ public class Expense
         LocalDate date,
         boolean habitual)
     {
-        if (id <= 0)
+        if (id < 0)
         {
-            throw new IllegalArgumentException(
-                "Id must be greater than zero.");
+            throw new IllegalArgumentException("Id cannot be negative.");
         }
         this.id = id;
         update(amount, category, description, date, habitual);
+    }
+
+
+    public void setAmount(double amount)
+    {
+        checkAmount(amount);
+        this.amount = amount;
+    }
+
+
+    public void setCategory(Category category)
+    {
+        checkCategory(category);
+        this.category = category;
+    }
+
+
+    public void setDescription(String description)
+    {
+        checkDescription(description);
+        this.description = description.trim();
+    }
+
+
+    public void setDate(LocalDate date)
+    {
+        checkDate(date);
+        this.date = date;
     }
 
 
@@ -189,45 +214,6 @@ public class Expense
     }
 
 
-    /**
-     * Compares this expense to another object. Two expenses are equal when
-     * every field matches.
-     *
-     * @param other
-     *            the object to compare against
-     * @return true if the object is an Expense with the same values
-     */
-    public boolean equals(Object other)
-    {
-        if (this == other)
-        {
-            return true;
-        }
-        if (other == null || other.getClass() != this.getClass())
-        {
-            return false;
-        }
-        Expense that = (Expense)other;
-        return this.id == that.id
-            && Double.compare(this.amount, that.amount) == 0
-            && this.habitual == that.habitual
-            && this.category == that.category
-            && this.description.equals(that.description)
-            && this.date.equals(that.date);
-    }
-
-
-    /**
-     * Builds a hash code so equal expenses hash the same way.
-     *
-     * @return the hash code for this expense
-     */
-    public int hashCode()
-    {
-        return Objects.hash(id, amount, category, description, date, habitual);
-    }
-
-
     private void checkAmount(double value)
     {
         if (Double.isNaN(value) || Double.isInfinite(value))
@@ -266,5 +252,41 @@ public class Expense
         {
             throw new IllegalArgumentException("Date cannot be empty.");
         }
+    }
+
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass())
+        {
+            return false;
+        }
+
+        Expense other = (Expense)obj;
+
+        return id == other.id && amount == other.amount
+            && category == other.category
+            && description.equals(other.description) && date.equals(other.date)
+            && habitual == other.habitual;
+    }
+
+
+    @Override
+    public int hashCode()
+    {
+        int result = Integer.hashCode(id);
+        result = 31 * result + Double.hashCode(amount);
+        result = 31 * result + category.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + date.hashCode();
+        result = 31 * result + Boolean.hashCode(habitual);
+
+        return result;
     }
 }

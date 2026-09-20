@@ -13,9 +13,10 @@ public class PocketPlanApp
 
     public PocketPlanApp(Scanner scanner, ExpenseTracker tracker)
     {
-        if (scanner == null || tracker == null) 
+        if (scanner == null || tracker == null)
         {
-            throw new IllegalArgumentException("Scanner and ExpenseTracker must not be null.");
+            throw new IllegalArgumentException(
+                "Scanner and ExpenseTracker must not be null.");
         }
 
         this.scanner = scanner;
@@ -23,32 +24,67 @@ public class PocketPlanApp
     }
 
 
-    public void run() {
+    public void run()
+    {
         boolean exit = false;
-        while (!exit) {
+
+        while (!exit)
+        {
             printMenu();
+
+            // Check whether there is actually input available
+            if (!scanner.hasNextLine())
+            {
+                break;
+            }
+
             int choice;
-            try {
-                choice = InputValidator.validateMenuChoice(scanner.nextLine(), 1, 8);
-            } catch (InvalidInputException e) {
+
+            try
+            {
+                choice =
+                    InputValidator.validateMenuChoice(scanner.nextLine(), 1, 8);
+            }
+            catch (InvalidInputException e)
+            {
                 System.out.println(e.getMessage());
                 continue;
             }
-            switch (choice) {
-                case 1 -> promptForIncomeAndBudget();
-                case 2 -> handleAddExpense();
-                case 3 -> handleEditExpense();
-                case 4 -> handleDeleteExpense();
-                case 5 -> displayExpenseList();
-                case 6 -> displaySummary();
-                case 7 -> displayCategoryAndHabitualReport();
-                case 8 -> exit = true;
+
+            switch (choice)
+            {
+                case 1:
+                    promptForIncomeAndBudget();
+                    break;
+                case 2:
+                    handleAddExpense();
+                    break;
+                case 3:
+                    handleEditExpense();
+                    break;
+                case 4:
+                    handleDeleteExpense();
+                    break;
+                case 5:
+                    displayExpenseList();
+                    break;
+                case 6:
+                    displaySummary();
+                    break;
+                case 7:
+                    displayCategoryAndHabitualReport();
+                    break;
+                case 8:
+                    exit = true;
+                    break;
             }
         }
-        System.out.println("Goodbye.");
+        System.out.println("Thank you for budgeting with us.");
     }
 
-    private void printMenu() {
+
+    private void printMenu()
+    {
         System.out.println();
         System.out.println("=== PocketPlan ===");
         System.out.println("1. Set income and budget");
@@ -62,142 +98,216 @@ public class PocketPlanApp
         System.out.print("Choose an option: ");
     }
 
-        private void promptForIncomeAndBudget() {
-        while (true) {
-            try {
+
+    private void promptForIncomeAndBudget()
+    {
+        while (true)
+        {
+            try
+            {
                 System.out.print("Enter monthly income: ");
-                double income = InputValidator.validatePositiveAmount(scanner.nextLine(), "income");
+                double income = InputValidator
+                    .validatePositiveAmount(scanner.nextLine(), "income");
                 System.out.print("Enter total budget: ");
-                double totalBudget = InputValidator.validatePositiveAmount(scanner.nextLine(), "budget");
+                double totalBudget = InputValidator
+                    .validatePositiveAmount(scanner.nextLine(), "budget");
                 tracker.setBudget(income, totalBudget);
                 System.out.println("Budget set.");
                 return;
-            } catch (InvalidInputException e) {
+            }
+            catch (InvalidInputException e)
+            {
                 System.out.println(e.getMessage());
             }
         }
     }
 
-    private void handleAddExpense() {
-        if (!tracker.hasBudget()) {
+
+    private void handleAddExpense()
+    {
+        if (!tracker.hasBudget())
+        {
             System.out.println("Enter income and budget first.");
             return;
         }
-        try {
+        try
+        {
             System.out.print("Amount: ");
-            double amount = InputValidator.validatePositiveAmount(scanner.nextLine(), "amount");
-            System.out.print("Category " + java.util.Arrays.toString(Category.values()) + ": ");
-            Category category = InputValidator.validateCategory(scanner.nextLine());
+            double amount = InputValidator
+                .validatePositiveAmount(scanner.nextLine(), "amount");
+            System.out.print(
+                "Category " + java.util.Arrays.toString(Category.values())
+                    + ": ");
+            Category category =
+                InputValidator.validateCategory(scanner.nextLine());
             System.out.print("Description: ");
-            String description = InputValidator.validateDescription(scanner.nextLine());
+            String description =
+                InputValidator.validateDescription(scanner.nextLine());
             System.out.print("Date (YYYY-MM-DD): ");
             LocalDate date = InputValidator.validateDate(scanner.nextLine());
             System.out.print("Habitual? (yes/no): ");
-            boolean habitual = InputValidator.validateHabitualTag(scanner.nextLine());
-            Expense added = tracker.addExpense(amount, category, description, date, habitual);
+            boolean habitual =
+                InputValidator.validateHabitualTag(scanner.nextLine());
+            Expense added = tracker
+                .addExpense(amount, category, description, date, habitual);
             System.out.println("Added expense #" + added.getId() + ".");
-        } catch (InvalidInputException e) {
+        }
+        catch (InvalidInputException e)
+        {
             System.out.println(e.getMessage());
         }
     }
 
-    private void handleEditExpense() {
-        if (tracker.getExpenses().isEmpty()) {
+
+    private void handleEditExpense()
+    {
+        if (tracker.getExpenses().isEmpty())
+        {
             System.out.println("No expenses available.");
             return;
         }
         displayExpenseList();
-        try {
+        try
+        {
             System.out.print("Enter the ID of the expense to edit: ");
             int id = InputValidator.validateExpenseId(scanner.nextLine());
             System.out.print("New amount: ");
-            double amount = InputValidator.validatePositiveAmount(scanner.nextLine(), "amount");
-            System.out.print("New category " + java.util.Arrays.toString(Category.values()) + ": ");
-            Category category = InputValidator.validateCategory(scanner.nextLine());
+            double amount = InputValidator
+                .validatePositiveAmount(scanner.nextLine(), "amount");
+            System.out.print(
+                "New category " + java.util.Arrays.toString(Category.values())
+                    + ": ");
+            Category category =
+                InputValidator.validateCategory(scanner.nextLine());
             System.out.print("New description: ");
-            String description = InputValidator.validateDescription(scanner.nextLine());
+            String description =
+                InputValidator.validateDescription(scanner.nextLine());
             System.out.print("New date (YYYY-MM-DD): ");
             LocalDate date = InputValidator.validateDate(scanner.nextLine());
             System.out.print("Habitual? (yes/no): ");
-            boolean habitual = InputValidator.validateHabitualTag(scanner.nextLine());
-            tracker.editExpense(id, amount, category, description, date, habitual);
+            boolean habitual =
+                InputValidator.validateHabitualTag(scanner.nextLine());
+            tracker
+                .editExpense(id, amount, category, description, date, habitual);
             System.out.println("Expense #" + id + " updated.");
-        } catch (InvalidInputException e) {
+        }
+        catch (InvalidInputException e)
+        {
             System.out.println(e.getMessage());
         }
     }
 
-    private void handleDeleteExpense() {
-        if (tracker.getExpenses().isEmpty()) {
+
+    private void handleDeleteExpense()
+    {
+        if (tracker.getExpenses().isEmpty())
+        {
             System.out.println("No expenses available.");
             return;
         }
         displayExpenseList();
-        try {
+        try
+        {
             System.out.print("Enter the ID of the expense to delete: ");
             int id = InputValidator.validateExpenseId(scanner.nextLine());
             tracker.deleteExpense(id);
             System.out.println("Expense #" + id + " deleted.");
-        } catch (InvalidInputException e) {
+        }
+        catch (InvalidInputException e)
+        {
             System.out.println(e.getMessage());
         }
     }
 
-    private void displayExpenseList() {
+
+    private void displayExpenseList()
+    {
         List<Expense> expenses = tracker.getExpenses();
-        if (expenses.isEmpty()) {
+        if (expenses.isEmpty())
+        {
             System.out.println("No expenses recorded yet.");
             return;
         }
         System.out.println();
-        for (Expense e : expenses) {
-            System.out.printf("#%d | $%.2f | %s | %s | %s | %s%n",
-                    e.getId(), e.getAmount(), e.getCategory(), e.getDescription(),
-                    e.getDate(), e.isHabitual() ? "habitual" : "non-habitual");
+        for (Expense e : expenses)
+        {
+            System.out.printf(
+                "#%d | $%.2f | %s | %s | %s | %s%n",
+                e.getId(),
+                e.getAmount(),
+                e.getCategory(),
+                e.getDescription(),
+                e.getDate(),
+                e.isHabitual() ? "habitual" : "non-habitual");
         }
     }
 
-    private void displaySummary() {
-        if (!tracker.hasBudget()) {
+
+    private void displaySummary()
+    {
+        if (!tracker.hasBudget())
+        {
             System.out.println("Enter income and budget first.");
             return;
         }
         Budget budget = tracker.getBudget();
         System.out.println();
-        System.out.printf("Monthly income: $%.2f%n", budget.getMonthlyIncome());
+        System.out.printf("Monthly income: $%.2f%n", budget.getIncome());
         System.out.printf("Total budget:   $%.2f%n", budget.getTotalBudget());
         System.out.printf("Total spent:    $%.2f%n", tracker.getTotalSpent());
         System.out.printf("Remaining:      $%.2f%n", tracker.getRemaining());
     }
 
-    private void displayCategoryAndHabitualReport() {
-        if (!tracker.hasBudget()) {
+
+    private void displayCategoryAndHabitualReport()
+    {
+        if (!tracker.hasBudget())
+        {
             System.out.println("Enter income and budget first.");
             return;
         }
         Map<Category, Double> breakdown = tracker.getCategoryBreakdown();
         System.out.println();
-        if (breakdown.isEmpty()) {
+        if (breakdown.isEmpty())
+        {
             System.out.println("No expenses recorded yet.");
             return;
         }
         System.out.println("Category breakdown:");
-        breakdown.forEach((category, total) -> System.out.printf("  %-14s $%.2f%n", category, total));
+        breakdown.forEach(
+            (category, total) -> System.out
+                .printf("  %-14s $%.2f%n", category, total));
 
         Optional<Category> highest = tracker.getHighestSpendingCategory();
-        highest.ifPresent(category -> System.out.println("Highest spending category: " + category));
+        highest.ifPresent(
+            category -> System.out
+                .println("Highest spending category: " + category));
 
-        System.out.printf("Habitual total:     $%.2f%n", tracker.getHabitualTotal());
-        System.out.printf("Non-habitual total: $%.2f%n", tracker.getNonHabitualTotal());
+        System.out
+            .printf("Habitual total:     $%.2f%n", tracker.getHabitualTotal());
+        System.out.printf(
+            "Non-habitual total: $%.2f%n",
+            tracker.getNonHabitualTotal());
     }
 
-    private void handleNewBudget() 
+
+    private void handleNewBudget()
     {
-        List<Expense> oldExpenses = tracker.resetForNewMonth(income, totalBudget);
-        if (!oldExpenses.isEmpty()) 
+        try
         {
-            String periodLabel = LocalDate.now().toString(); // or ask the user to name the month
-            archiveStorage.archiveExpenses(ARCHIVE_FILEPATH, oldExpenses, periodLabel);
+            System.out.print("Enter monthly income: ");
+            double income = InputValidator
+                .validatePositiveAmount(scanner.nextLine(), "income");
+            System.out.print("Enter total budget: ");
+            double totalBudget = InputValidator
+                .validatePositiveAmount(scanner.nextLine(), "budget");
+            tracker.resetForNewMonth(income, totalBudget);
+            System.out
+                .println("Budget reset. Previous expenses have been cleared.");
+        }
+        catch (InvalidInputException e)
+        {
+            System.out.println(e.getMessage());
         }
     }
 }

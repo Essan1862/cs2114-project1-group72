@@ -6,101 +6,269 @@ import student.TestCase;
 /**
  * Tests for Expense.
  */
-public class ExpenseTest extends TestCase {
+public class ExpenseTest
+    extends TestCase
+{
 
     private LocalDate sampleDate;
 
-    public void setUp() {
+    public void setUp()
+    {
         sampleDate = LocalDate.of(2026, 9, 13);
     }
 
+
     // Expense(): normal case
-    public void testConstructorValidValuesStoresAllFields() {
-        Expense expense = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+    public void testConstructorValidValuesStoresAllFields()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
 
         assertEquals(1, expense.getId());
-        assertEquals(45.50, expense.getAmount());
+        assertEquals(45.50, expense.getAmount(), 0.001);
         assertEquals(Category.FOOD, expense.getCategory());
         assertEquals("Groceries", expense.getDescription());
         assertEquals(sampleDate, expense.getDate());
         assertTrue(expense.isHabitual());
     }
 
+
     // Expense(): bad-input case
-    public void testConstructorInvalidAmountThrowsException() {
+    public void testConstructorInvalidAmountThrowsException()
+    {
         boolean exceptionWasThrown = false;
 
-        try {
+        try
+        {
             Expense expense = new Expense(
-                1, -5.0, Category.FOOD, "Groceries", sampleDate, true);
+                1,
+                -5.0,
+                Category.FOOD,
+                "Groceries",
+                sampleDate,
+                true);
         }
-        catch (IllegalArgumentException e) {
+        catch (IllegalArgumentException e)
+        {
             exceptionWasThrown = true;
         }
 
         assertTrue(exceptionWasThrown);
     }
 
-    // update(): normal case
-    public void testUpdateChangesFieldsExceptId() {
-        Expense expense = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
 
-        expense.update(60.00, Category.ENTERTAINMENT, "New purchase",
-            sampleDate, false);
+    // update(): normal case
+    public void testUpdateChangesFieldsExceptId()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        expense.update(
+            60.00,
+            Category.ENTERTAINMENT,
+            "New purchase",
+            sampleDate,
+            false);
 
         assertEquals(1, expense.getId());
-        assertEquals(60.00, expense.getAmount());
+        assertEquals(60.00, expense.getAmount(), 0.001);
         assertEquals(Category.ENTERTAINMENT, expense.getCategory());
         assertFalse(expense.isHabitual());
     }
 
+
     // update(): bad-input case
-    public void testUpdateWithInvalidAmountLeavesFieldsUnchanged() {
-        Expense expense = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+    public void testUpdateWithInvalidAmountLeavesFieldsUnchanged()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
         boolean exceptionWasThrown = false;
 
-        try {
-            expense.update(-5.0, Category.ENTERTAINMENT, "New purchase",
-                sampleDate, false);
+        try
+        {
+            expense.update(
+                -5.0,
+                Category.ENTERTAINMENT,
+                "New purchase",
+                sampleDate,
+                false);
         }
-        catch (IllegalArgumentException e) {
+        catch (IllegalArgumentException e)
+        {
             exceptionWasThrown = true;
         }
 
         assertTrue(exceptionWasThrown);
-        assertEquals(45.50, expense.getAmount()); // unchanged
+        assertEquals(45.50, expense.getAmount(), 0.001); // unchanged
     }
 
+
     // equals(): normal case
-    public void testEqualsSameValuesReturnsTrue() {
-        Expense expenseA = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
-        Expense expenseB = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+    public void testEqualsSameValuesReturnsTrue()
+    {
+        Expense expenseA =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+        Expense expenseB =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
 
         assertTrue(expenseA.equals(expenseB));
     }
 
+
     // equals(): bad case
-    public void testEqualsDifferentValuesReturnsFalse() {
-        Expense expenseA = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+    public void testEqualsDifferentValuesReturnsFalse()
+    {
+        Expense expenseA =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
         Expense expenseB = new Expense(
-            2, 99.99, Category.ENTERTAINMENT, "Movie", sampleDate, false);
+            2,
+            99.99,
+            Category.ENTERTAINMENT,
+            "Movie",
+            sampleDate,
+            false);
 
         assertFalse(expenseA.equals(expenseB));
     }
 
+
     // hashCode(): consistency with equals
-    public void testHashCodeMatchesForEqualExpenses() {
-        Expense expenseA = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
-        Expense expenseB = new Expense(
-            1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+    public void testHashCodeMatchesForEqualExpenses()
+    {
+        Expense expenseA =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+        Expense expenseB =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
 
         assertEquals(expenseA.hashCode(), expenseB.hashCode());
+    }
+
+
+    public void testSetAmountValid()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        expense.setAmount(75.00);
+
+        assertEquals(75.00, expense.getAmount(), 0.001);
+    }
+
+
+    public void testSetAmountInvalid()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        try
+        {
+            expense.setAmount(-10.00);
+            fail("Expected IllegalArgumentException.");
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertEquals("Amount must be greater than zero.", e.getMessage());
+        }
+    }
+
+
+    public void testSetCategoryValid()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        expense.setCategory(Category.ENTERTAINMENT);
+
+        assertEquals(Category.ENTERTAINMENT, expense.getCategory());
+    }
+
+
+    public void testSetCategoryNull()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        try
+        {
+            expense.setCategory(null);
+            fail("Expected IllegalArgumentException.");
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertEquals("Category cannot be empty.", e.getMessage());
+        }
+    }
+
+
+    public void testSetDescriptionValid()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        expense.setDescription("Weekly groceries");
+
+        assertEquals("Weekly groceries", expense.getDescription());
+    }
+
+
+    public void testSetDescriptionBlank()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        try
+        {
+            expense.setDescription("   ");
+            fail("Expected IllegalArgumentException.");
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertEquals("Description cannot be blank.", e.getMessage());
+        }
+    }
+
+
+    public void testSetDateValid()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        LocalDate newDate = LocalDate.of(2026, 9, 20);
+
+        expense.setDate(newDate);
+
+        assertEquals(newDate, expense.getDate());
+    }
+
+
+    public void testSetDateNull()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        try
+        {
+            expense.setDate(null);
+            fail("Expected IllegalArgumentException.");
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertEquals("Date cannot be empty.", e.getMessage());
+        }
+    }
+
+
+    public void testToString()
+    {
+        Expense expense =
+            new Expense(1, 45.50, Category.FOOD, "Groceries", sampleDate, true);
+
+        String result = expense.toString();
+
+        assertTrue(result.contains("#1"));
+        assertTrue(result.contains("45.50"));
+        assertTrue(result.contains("FOOD"));
+        assertTrue(result.contains("Groceries"));
+        assertTrue(result.contains("habitual"));
     }
 }
