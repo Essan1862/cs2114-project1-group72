@@ -24,3 +24,7 @@ hs_err_pid*
 replay_pid*
 .project
 /bin/
+
+# Saved program data created at runtime
+budget.csv
+expenses.csv
