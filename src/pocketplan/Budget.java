@@ -17,6 +17,16 @@ public class Budget
     public Budget(double income, double totalBudget)
         throws InvalidInputException
     {
+        if (income <= 0)
+        {
+            throw new InvalidInputException(
+                "Monthly income must be greater than zero.");
+        }
+        if (totalBudget <= 0)
+        {
+            throw new InvalidInputException(
+                "Total budget must be greater than zero.");
+        }
         if (totalBudget > income)
         {
             throw new InvalidInputException(
@@ -55,6 +65,11 @@ public class Budget
      */
     public double getRemaining(double totalSpent)
     {
+        if (totalSpent < 0)
+        {
+            throw new IllegalArgumentException(
+                "Amount spent cannot be negative.");
+        }
         return totalBudget - totalSpent;
     }
 
@@ -67,6 +82,11 @@ public class Budget
      */
     public boolean wouldExceedBudget(double totalSpent, double newAmount)
     {
+        if (totalSpent < 0 || newAmount < 0)
+        {
+            throw new IllegalArgumentException(
+                "Amounts cannot be negative.");
+        }
         if ((totalSpent + newAmount) > totalBudget)
         {
             return true;

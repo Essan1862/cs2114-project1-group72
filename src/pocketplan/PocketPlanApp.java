@@ -101,19 +101,163 @@ public class PocketPlanApp
 
     private void promptForIncomeAndBudget()
     {
+        double income = askForAmount("Enter monthly income: ", "income");
         while (true)
         {
+            double totalBudget = askForAmount("Enter total budget: ",
+                "budget");
             try
             {
-                System.out.print("Enter monthly income: ");
-                double income = InputValidator
-                    .validatePositiveAmount(scanner.nextLine(), "income");
-                System.out.print("Enter total budget: ");
-                double totalBudget = InputValidator
-                    .validatePositiveAmount(scanner.nextLine(), "budget");
                 tracker.setBudget(income, totalBudget);
                 System.out.println("Budget set.");
                 return;
+            }
+            catch (InvalidInputException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Keeps asking for an amount until the user types a valid one.
+     *
+     * @param label
+     *            the prompt shown to the user
+     * @param fieldName
+     *            the field name used in the error message
+     * @return the amount the user entered
+     */
+    private double askForAmount(String label, String fieldName)
+    {
+        while (true)
+        {
+            System.out.print(label);
+            try
+            {
+                return InputValidator
+                    .validatePositiveAmount(scanner.nextLine(), fieldName);
+            }
+            catch (InvalidInputException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Keeps asking for a category until the user types a valid one.
+     *
+     * @param label
+     *            the prompt shown to the user
+     * @return the category the user chose
+     */
+    private Category askForCategory(String label)
+    {
+        while (true)
+        {
+            System.out.print(label);
+            try
+            {
+                return InputValidator.validateCategory(scanner.nextLine());
+            }
+            catch (InvalidInputException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Keeps asking for a description until the user types a valid one.
+     *
+     * @param label
+     *            the prompt shown to the user
+     * @return the description the user entered
+     */
+    private String askForDescription(String label)
+    {
+        while (true)
+        {
+            System.out.print(label);
+            try
+            {
+                return InputValidator.validateDescription(scanner.nextLine());
+            }
+            catch (InvalidInputException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Keeps asking for a date until the user types a valid one.
+     *
+     * @param label
+     *            the prompt shown to the user
+     * @return the date the user entered
+     */
+    private LocalDate askForDate(String label)
+    {
+        while (true)
+        {
+            System.out.print(label);
+            try
+            {
+                return InputValidator.validateDate(scanner.nextLine());
+            }
+            catch (InvalidInputException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Keeps asking for the habitual tag until the user types a valid one.
+     *
+     * @param label
+     *            the prompt shown to the user
+     * @return true if the expense is habitual, false if not
+     */
+    private boolean askForHabitual(String label)
+    {
+        while (true)
+        {
+            System.out.print(label);
+            try
+            {
+                return InputValidator.validateHabitualTag(scanner.nextLine());
+            }
+            catch (InvalidInputException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Keeps asking for an expense id until the user types a valid number.
+     *
+     * @param label
+     *            the prompt shown to the user
+     * @return the id the user entered
+     */
+    private int askForExpenseId(String label)
+    {
+        while (true)
+        {
+            System.out.print(label);
+            try
+            {
+                return InputValidator.validateExpenseId(scanner.nextLine());
             }
             catch (InvalidInputException e)
             {
@@ -130,24 +274,15 @@ public class PocketPlanApp
             System.out.println("Enter income and budget first.");
             return;
         }
+        double amount = askForAmount("Amount: ", "amount");
+        Category category = askForCategory(
+            "Category " + java.util.Arrays.toString(Category.values()) + ": ");
+        String description = askForDescription("Description: ");
+        LocalDate date = askForDate("Date (YYYY-MM-DD): ");
+        boolean habitual = askForHabitual("Habitual? (yes/no): ");
+
         try
         {
-            System.out.print("Amount: ");
-            double amount = InputValidator
-                .validatePositiveAmount(scanner.nextLine(), "amount");
-            System.out.print(
-                "Category " + java.util.Arrays.toString(Category.values())
-                    + ": ");
-            Category category =
-                InputValidator.validateCategory(scanner.nextLine());
-            System.out.print("Description: ");
-            String description =
-                InputValidator.validateDescription(scanner.nextLine());
-            System.out.print("Date (YYYY-MM-DD): ");
-            LocalDate date = InputValidator.validateDate(scanner.nextLine());
-            System.out.print("Habitual? (yes/no): ");
-            boolean habitual =
-                InputValidator.validateHabitualTag(scanner.nextLine());
             Expense added = tracker
                 .addExpense(amount, category, description, date, habitual);
             System.out.println("Added expense #" + added.getId() + ".");
@@ -167,26 +302,16 @@ public class PocketPlanApp
             return;
         }
         displayExpenseList();
+        int id = askForExpenseId("Enter the ID of the expense to edit: ");
+        double amount = askForAmount("New amount: ", "amount");
+        Category category = askForCategory("New category "
+            + java.util.Arrays.toString(Category.values()) + ": ");
+        String description = askForDescription("New description: ");
+        LocalDate date = askForDate("New date (YYYY-MM-DD): ");
+        boolean habitual = askForHabitual("Habitual? (yes/no): ");
+
         try
         {
-            System.out.print("Enter the ID of the expense to edit: ");
-            int id = InputValidator.validateExpenseId(scanner.nextLine());
-            System.out.print("New amount: ");
-            double amount = InputValidator
-                .validatePositiveAmount(scanner.nextLine(), "amount");
-            System.out.print(
-                "New category " + java.util.Arrays.toString(Category.values())
-                    + ": ");
-            Category category =
-                InputValidator.validateCategory(scanner.nextLine());
-            System.out.print("New description: ");
-            String description =
-                InputValidator.validateDescription(scanner.nextLine());
-            System.out.print("New date (YYYY-MM-DD): ");
-            LocalDate date = InputValidator.validateDate(scanner.nextLine());
-            System.out.print("Habitual? (yes/no): ");
-            boolean habitual =
-                InputValidator.validateHabitualTag(scanner.nextLine());
             tracker
                 .editExpense(id, amount, category, description, date, habitual);
             System.out.println("Expense #" + id + " updated.");
