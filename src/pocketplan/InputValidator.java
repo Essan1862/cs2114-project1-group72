@@ -7,6 +7,9 @@ import java.time.format.DateTimeParseException;
 /**
  * Utility class to convert raw text into valid values for PocketPlan. Throws
  * InvalidInputException with clean user-facing error messages on failure.
+ *
+ * @author Essan Salem
+ * @version 2026.09.20
  */
 public class InputValidator
 {
@@ -116,6 +119,15 @@ public class InputValidator
     }
 
 
+    /**
+     * Turns typed text into a date.
+     *
+     * @param input
+     *            the text the user typed
+     * @return the date it represents
+     * @throws InvalidInputException
+     *            if the text is blank or not a date the program accepts
+     */
     public static LocalDate validateDate(String input)
         throws InvalidInputException
     {

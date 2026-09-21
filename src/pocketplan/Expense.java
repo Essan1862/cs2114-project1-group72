@@ -55,6 +55,14 @@ public class Expense
     }
 
 
+    /**
+     * Changes the amount of this expense.
+     *
+     * @param amount
+     *            the new amount, must be greater than zero
+     * @throws IllegalArgumentException
+     *            if the value is not allowed
+     */
     public void setAmount(double amount)
     {
         checkAmount(amount);
@@ -62,6 +70,14 @@ public class Expense
     }
 
 
+    /**
+     * Changes the category of this expense.
+     *
+     * @param category
+     *            the new category, cannot be null
+     * @throws IllegalArgumentException
+     *            if the value is not allowed
+     */
     public void setCategory(Category category)
     {
         checkCategory(category);
@@ -69,6 +85,14 @@ public class Expense
     }
 
 
+    /**
+     * Changes the description of this expense.
+     *
+     * @param description
+     *            the new description, cannot be blank
+     * @throws IllegalArgumentException
+     *            if the value is not allowed
+     */
     public void setDescription(String description)
     {
         checkDescription(description);
@@ -76,6 +100,14 @@ public class Expense
     }
 
 
+    /**
+     * Changes the date of this expense.
+     *
+     * @param date
+     *            the new date, cannot be null
+     * @throws IllegalArgumentException
+     *            if the value is not allowed
+     */
     public void setDate(LocalDate date)
     {
         checkDate(date);
@@ -255,6 +287,13 @@ public class Expense
     }
 
 
+    /**
+     * Compares this expense to another object.
+     *
+     * @param obj
+     *            the object to compare against
+     * @return true if the object is an Expense with the same values
+     */
     @Override
     public boolean equals(Object obj)
     {
@@ -277,6 +316,11 @@ public class Expense
     }
 
 
+    /**
+     * Builds a hash code so equal expenses hash the same way.
+     *
+     * @return the hash code for this expense
+     */
     @Override
     public int hashCode()
     {

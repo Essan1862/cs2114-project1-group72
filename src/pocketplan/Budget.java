@@ -14,6 +14,18 @@ public class Budget
     private double monthlyIncome;
     private double totalBudget;
 
+    /**
+     * Creates a budget for one month.
+     *
+     * @param income
+     *            the monthly income, must be greater than zero
+     * @param totalBudget
+     *            the spending limit, must be greater than zero and no
+     *            larger than the income
+     * @throws InvalidInputException
+     *            if either value is not positive, or the budget is larger
+     *            than the income
+     */
     public Budget(double income, double totalBudget)
         throws InvalidInputException
     {
@@ -38,9 +50,11 @@ public class Budget
 
 
     /**
-     * Gets the monthly income from the budget.
+     * Gets the monthly income stored in this budget.
+     *
+     * @return the monthly income
      */
-    public double getIncome()
+    public double getMonthlyIncome()
     {
         return monthlyIncome;
     }

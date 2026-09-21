@@ -1,8 +1,16 @@
 package pocketplan;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 import student.TestCase;
 
+/**
+ * Tests for PocketPlanApp.
+ *
+ * @author Essan Salem
+ * @version 2026.09.20
+ */
 public class PocketPlanAppTest
     extends TestCase
 {
@@ -133,9 +141,7 @@ public class PocketPlanAppTest
         Scanner scanner = new Scanner(scriptedInput);
         PocketPlanApp app = new PocketPlanApp(scanner, tracker);
 
-        app.run();
-
-        String output = systemOut().getHistory();
+        String output = capturePrintedOutput(app::run);
 
         assertTrue(output.contains("Groceries"));
         assertTrue(output.contains("FOOD"));
@@ -151,9 +157,7 @@ public class PocketPlanAppTest
         Scanner scanner = new Scanner(scriptedInput);
         PocketPlanApp app = new PocketPlanApp(scanner, tracker);
 
-        app.run();
-
-        String output = systemOut().getHistory();
+        String output = capturePrintedOutput(app::run);
 
         assertTrue(output.contains("Monthly income"));
         assertTrue(output.contains("3000.00"));
@@ -175,9 +179,7 @@ public class PocketPlanAppTest
         Scanner scanner = new Scanner(scriptedInput);
         PocketPlanApp app = new PocketPlanApp(scanner, tracker);
 
-        app.run();
-
-        String output = systemOut().getHistory();
+        String output = capturePrintedOutput(app::run);
 
         assertTrue(output.contains("Category breakdown"));
         assertTrue(output.contains("Highest spending category: FOOD"));
@@ -187,4 +189,29 @@ public class PocketPlanAppTest
         assertTrue(output.contains("50.00"));
     }
 
+
+    /**
+     * Records everything the program prints while the given code runs. The
+     * recorder built into the test library does not clear itself between
+     * tests, so the output is captured here instead.
+     *
+     * @param action
+     *            the code to run while output is being recorded
+     * @return everything that was printed
+     */
+    private String capturePrintedOutput(Runnable action)
+    {
+        PrintStream realOut = System.out;
+        ByteArrayOutputStream recorded = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(recorded));
+        try
+        {
+            action.run();
+        }
+        finally
+        {
+            System.setOut(realOut);
+        }
+        return recorded.toString();
+    }
 }

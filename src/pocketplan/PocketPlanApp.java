@@ -6,11 +6,37 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
+/**
+ * Handles everything the user sees and types: the menu, the questions,
+ * and the printed reports.
+ *
+ * @author Essan Salem
+ * @version 2026.09.20
+ */
 public class PocketPlanApp
 {
+    /**
+     * Raised when the program asks a question but no input is left.
+     */
+    private static class InputEndedException
+        extends RuntimeException
+    {
+        // nothing to carry; the menu loop only needs to know it happened
+    }
+
     private final Scanner scanner;
     private final ExpenseTracker tracker;
 
+    /**
+     * Creates the console app.
+     *
+     * @param scanner
+     *            where input is read from, cannot be null
+     * @param tracker
+     *            where expenses and the budget are kept, cannot be null
+     * @throws IllegalArgumentException
+     *            if either value is null
+     */
     public PocketPlanApp(Scanner scanner, ExpenseTracker tracker)
     {
         if (scanner == null || tracker == null)
@@ -24,7 +50,27 @@ public class PocketPlanApp
     }
 
 
+    /**
+     * Runs the menu until the user exits or the input runs out.
+     */
     public void run()
+    {
+        try
+        {
+            runMenu();
+        }
+        catch (InputEndedException e)
+        {
+            System.out.println("Input ended before that entry was finished.");
+        }
+        System.out.println("Thank you for budgeting with us.");
+    }
+
+
+    /**
+     * Shows the menu and carries out each choice until the user exits.
+     */
+    private void runMenu()
     {
         boolean exit = false;
 
@@ -43,7 +89,7 @@ public class PocketPlanApp
             try
             {
                 choice =
-                    InputValidator.validateMenuChoice(scanner.nextLine(), 1, 8);
+                    InputValidator.validateMenuChoice(nextLine(), 1, 8);
             }
             catch (InvalidInputException e)
             {
@@ -79,7 +125,21 @@ public class PocketPlanApp
                     break;
             }
         }
-        System.out.println("Thank you for budgeting with us.");
+    }
+
+
+    /**
+     * Reads the next line the user typed.
+     *
+     * @return that line
+     */
+    private String nextLine()
+    {
+        if (!scanner.hasNextLine())
+        {
+            throw new InputEndedException();
+        }
+        return scanner.nextLine();
     }
 
 
@@ -137,7 +197,7 @@ public class PocketPlanApp
             try
             {
                 return InputValidator
-                    .validatePositiveAmount(scanner.nextLine(), fieldName);
+                    .validatePositiveAmount(nextLine(), fieldName);
             }
             catch (InvalidInputException e)
             {
@@ -161,7 +221,7 @@ public class PocketPlanApp
             System.out.print(label);
             try
             {
-                return InputValidator.validateCategory(scanner.nextLine());
+                return InputValidator.validateCategory(nextLine());
             }
             catch (InvalidInputException e)
             {
@@ -185,7 +245,7 @@ public class PocketPlanApp
             System.out.print(label);
             try
             {
-                return InputValidator.validateDescription(scanner.nextLine());
+                return InputValidator.validateDescription(nextLine());
             }
             catch (InvalidInputException e)
             {
@@ -209,7 +269,7 @@ public class PocketPlanApp
             System.out.print(label);
             try
             {
-                return InputValidator.validateDate(scanner.nextLine());
+                return InputValidator.validateDate(nextLine());
             }
             catch (InvalidInputException e)
             {
@@ -233,7 +293,7 @@ public class PocketPlanApp
             System.out.print(label);
             try
             {
-                return InputValidator.validateHabitualTag(scanner.nextLine());
+                return InputValidator.validateHabitualTag(nextLine());
             }
             catch (InvalidInputException e)
             {
@@ -257,7 +317,7 @@ public class PocketPlanApp
             System.out.print(label);
             try
             {
-                return InputValidator.validateExpenseId(scanner.nextLine());
+                return InputValidator.validateExpenseId(nextLine());
             }
             catch (InvalidInputException e)
             {
@@ -331,10 +391,10 @@ public class PocketPlanApp
             return;
         }
         displayExpenseList();
+        int id = askForExpenseId("Enter the ID of the expense to delete: ");
+
         try
         {
-            System.out.print("Enter the ID of the expense to delete: ");
-            int id = InputValidator.validateExpenseId(scanner.nextLine());
             tracker.deleteExpense(id);
             System.out.println("Expense #" + id + " deleted.");
         }
@@ -377,7 +437,7 @@ public class PocketPlanApp
         }
         Budget budget = tracker.getBudget();
         System.out.println();
-        System.out.printf("Monthly income: $%.2f%n", budget.getIncome());
+        System.out.printf("Monthly income: $%.2f%n", budget.getMonthlyIncome());
         System.out.printf("Total budget:   $%.2f%n", budget.getTotalBudget());
         System.out.printf("Total spent:    $%.2f%n", tracker.getTotalSpent());
         System.out.printf("Remaining:      $%.2f%n", tracker.getRemaining());
@@ -418,14 +478,11 @@ public class PocketPlanApp
 
     private void handleNewBudget()
     {
+        double income = askForAmount("Enter monthly income: ", "income");
+        double totalBudget = askForAmount("Enter total budget: ", "budget");
+
         try
         {
-            System.out.print("Enter monthly income: ");
-            double income = InputValidator
-                .validatePositiveAmount(scanner.nextLine(), "income");
-            System.out.print("Enter total budget: ");
-            double totalBudget = InputValidator
-                .validatePositiveAmount(scanner.nextLine(), "budget");
             tracker.resetForNewMonth(income, totalBudget);
             System.out
                 .println("Budget reset. Previous expenses have been cleared.");

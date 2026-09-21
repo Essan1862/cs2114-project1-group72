@@ -3,8 +3,21 @@ package pocketplan;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+/**
+ * Starting point for PocketPlan. Wires the pieces together and runs the app.
+ *
+ * @author Essan Salem
+ * @version 2026.09.20
+ */
 public class Main
 {
+    /**
+     * Creates the shared objects, restores any saved data, runs the menu,
+     * then saves before closing.
+     *
+     * @param args
+     *            command line arguments, not used
+     */
     public static void main(String[] args)
     {
         String expensesFilepath = "expenses.csv";
@@ -18,7 +31,7 @@ public class Main
         }
         catch (FileNotFoundException e)
         {
-            System.out.println("No saved budget found — please set one.");
+            System.out.println("No saved budget found - please set one.");
         }
 
         try
@@ -27,7 +40,7 @@ public class Main
         }
         catch (FileNotFoundException e)
         {
-            System.out.println("No saved expenses found — starting fresh.");
+            System.out.println("No saved expenses found - starting fresh.");
         }
 
         PocketPlanApp app = new PocketPlanApp(scanner, tracker);

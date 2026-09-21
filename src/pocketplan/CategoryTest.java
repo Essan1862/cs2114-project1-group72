@@ -2,6 +2,12 @@ package pocketplan;
 
 import student.TestCase;
 
+/**
+ * Tests for Category.
+ *
+ * @author Wenxin Zhang
+ * @version 2026.09.20
+ */
 public class CategoryTest
     extends TestCase
 {

@@ -36,6 +36,16 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Stores a new budget for the month.
+     *
+     * @param income
+     *            the monthly income
+     * @param totalBudget
+     *            the spending limit for the month
+     * @throws InvalidInputException
+     *            if the values are not allowed
+     */
     public void setBudget(double income, double totalBudget)
         throws InvalidInputException
     {
@@ -43,12 +53,24 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Tells whether a budget has been set yet.
+     *
+     * @return true if a budget exists
+     */
     public boolean hasBudget()
     {
         return this.budget != null;
     }
 
 
+    /**
+     * Gets the current budget.
+     *
+     * @return the budget
+     * @throws IllegalStateException
+     *            if no budget has been set
+     */
     public Budget getBudget()
     {
         if (!hasBudget())
@@ -234,7 +256,7 @@ public class ExpenseTracker
             if (hasBudget())
             {
                 writer.println(
-                    budget.getIncome() + "," + budget.getTotalBudget());
+                    budget.getMonthlyIncome() + "," + budget.getTotalBudget());
             }
         }
     }
@@ -277,12 +299,23 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Gets the expenses in the order they were added. The list cannot be
+     * changed by the caller.
+     *
+     * @return the list of expenses
+     */
     public List<Expense> getExpenses()
     {
         return Collections.unmodifiableList(expenses);
     }
 
 
+    /**
+     * Adds up every expense recorded so far.
+     *
+     * @return the total amount spent
+     */
     public double getTotalSpent()
     {
         double total = 0.0;
@@ -294,12 +327,24 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Works out how much of the budget is left.
+     *
+     * @return the money remaining
+     * @throws IllegalStateException
+     *            if no budget has been set
+     */
     public double getRemaining()
     {
         return getBudget().getRemaining(getTotalSpent());
     }
 
 
+    /**
+     * Totals the spending in each category.
+     *
+     * @return a map of category to amount spent
+     */
     public Map<Category, Double> getCategoryBreakdown()
     {
         Map<Category, Double> breakdown = new EnumMap<>(Category.class);
@@ -317,6 +362,11 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Finds the category with the most money spent in it.
+     *
+     * @return the highest category, or empty if nothing was spent
+     */
     public Optional<Category> getHighestSpendingCategory()
     {
         if (expenses.isEmpty())
@@ -341,6 +391,11 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Adds up the expenses marked as habitual.
+     *
+     * @return the habitual total
+     */
     public double getHabitualTotal()
     {
         double total = 0.0;
@@ -355,6 +410,11 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Adds up the expenses not marked as habitual.
+     *
+     * @return the non-habitual total
+     */
     public double getNonHabitualTotal()
     {
         double total = 0.0;
@@ -383,6 +443,16 @@ public class ExpenseTracker
     }
 
 
+    /**
+     * Clears the expenses and stores a new budget for a fresh month.
+     *
+     * @param income
+     *            the monthly income
+     * @param totalBudget
+     *            the spending limit for the month
+     * @throws InvalidInputException
+     *            if the values are not allowed
+     */
     public void resetForNewMonth(double income, double totalBudget)
         throws InvalidInputException
     {

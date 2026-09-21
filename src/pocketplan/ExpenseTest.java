@@ -5,6 +5,9 @@ import student.TestCase;
 
 /**
  * Tests for Expense.
+ *
+ * @author Angelo Pinillos-Sternberg
+ * @version 2026.09.20
  */
 public class ExpenseTest
     extends TestCase

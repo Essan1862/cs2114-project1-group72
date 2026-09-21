@@ -11,6 +11,7 @@ import java.util.Optional;
  * invalid states, and CSV persistence.
  * 
  * @author Wenxin Zhang
+ * @version 2026.09.20
  * @verison 2026.09.18
  */
 public class ExpenseTrackerTest
@@ -284,7 +285,7 @@ public class ExpenseTrackerTest
 
         assertEquals(0, tracker.getExpenses().size());
         assertEquals(0.0, tracker.getTotalSpent(), 0.001);
-        assertEquals(4000.0, tracker.getBudget().getIncome(), 0.001);
+        assertEquals(4000.0, tracker.getBudget().getMonthlyIncome(), 0.001);
         assertEquals(2500.0, tracker.getBudget().getTotalBudget(), 0.001);
 
         Expense newExpense = tracker
@@ -307,7 +308,7 @@ public class ExpenseTrackerTest
         loadedTracker.loadBudgetFromCSV(budgetFile);
 
         assertTrue(loadedTracker.hasBudget());
-        assertEquals(5000.0, loadedTracker.getBudget().getIncome(), 0.001);
+        assertEquals(5000.0, loadedTracker.getBudget().getMonthlyIncome(), 0.001);
         assertEquals(3000.0, loadedTracker.getBudget().getTotalBudget(), 0.001);
 
         File file = new File(budgetFile);

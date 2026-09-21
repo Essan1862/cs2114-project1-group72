@@ -2,6 +2,12 @@ package pocketplan;
 
 import student.TestCase;
 
+/**
+ * Tests for Budget.
+ *
+ * @author Mckenna Bryan
+ * @version 2026.09.20
+ */
 public class BudgetTest
     extends TestCase
 {
@@ -16,7 +22,7 @@ public class BudgetTest
 
     public void testGetIncome()
     {
-        assertEquals(500.00, budget.getIncome(), 0.001);
+        assertEquals(500.00, budget.getMonthlyIncome(), 0.001);
     }
 
 

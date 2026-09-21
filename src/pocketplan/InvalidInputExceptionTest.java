@@ -4,6 +4,9 @@ import student.TestCase;
 
 /**
  * Tests for InvalidInputException.
+ *
+ * @author Angelo Pinillos-Sternberg
+ * @version 2026.09.20
  */
 public class InvalidInputExceptionTest
     extends TestCase
